@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>アンケート結果ダッシュボード MVP</title>
+  <title>インサイトダッシュボード</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
@@ -19,131 +19,174 @@
   </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1em;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased">
-  <div class="min-h-screen flex flex-col">
-    
-    <!-- Navbar -->
-    <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-        <h1 class="text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
-          <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-          </svg>
-          Results Dashboard MVP
-        </h1>
-        <div class="text-sm text-slate-500 hidden sm:block">
-          データ更新: <span id="last-updated" class="font-mono bg-slate-100 px-2 py-1 rounded">2026-04-11 15:00</span>
-        </div>
-      </div>
-    </header>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
 
-    <!-- Main Content -->
-    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+  <!-- Navbar -->
+  <header class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
+        <svg class="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Election Dashboard
+      </h1>
+      <div class="text-sm text-slate-500 hidden sm:flex items-center gap-2">
+        <span>データ更新:</span>
+        <span id="last-updated" class="font-mono bg-slate-100 px-2 py-1 rounded">取得中...</span>
+      </div>
+    </div>
+    
+    <!-- 属性フィルター (Personalization) -->
+    <div class="bg-slate-50/50 border-t border-slate-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center gap-4 overflow-x-auto">
+        <label for="generation-filter" class="text-sm font-medium text-slate-600 whitespace-nowrap">
+          <svg class="w-4 h-4 inline-block mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path></svg>
+          分析対象
+        </label>
+        <select id="generation-filter" class="block w-48 pl-3 pr-10 py-2 text-sm border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 rounded-lg shadow-sm border bg-white text-slate-700 font-medium transition-shadow cursor-pointer">
+          <option value="overall">🌟 全体のデータ</option>
+          <option disabled>──────────</option>
+          <option value="10代">10代</option>
+          <option value="20代">20代</option>
+          <option value="30代">30代</option>
+          <option value="40代">40代</option>
+          <option value="50代">50代</option>
+          <option value="60代">60代</option>
+          <option value="70代">70代</option>
+          <option value="80代以上">80代以上</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    
+    <!-- Loading UI -->
+    <div id="loading-spinner" class="flex flex-col items-center justify-center py-20">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
+      <p class="text-slate-500 font-medium tracking-wide animate-pulse">データを分析しています...</p>
+    </div>
+
+    <!-- Dashboard Content (Hidden initially) -->
+    <div id="dashboard-content" class="hidden animate-fade-in fade-in transition-opacity duration-500">
       
-      <!-- Loading UI -->
-      <div id="loading-spinner" class="flex flex-col items-center justify-center py-20">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mb-4"></div>
-        <p class="text-slate-500 font-medium tracking-wide animate-pulse">データを読み込んでいます...</p>
-      </div>
-
-      <!-- Error Message -->
-      <div id="error-message" class="hidden py-10">
-        <div class="bg-red-50 border border-red-200 text-red-600 rounded-xl p-8 flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-          <svg class="w-16 h-16 mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <h3 class="text-xl font-bold mb-2">データの取得に失敗しました</h3>
-          <p id="error-details" class="text-slate-600 mb-4">サーバーから最新のデータを読み込めませんでした。後でもう一度お試しください。</p>
-          <button onclick="location.reload()" class="px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
-            再読み込み
-          </button>
-        </div>
-      </div>
-
-      <!-- Dashboard Content -->
-      <div id="dashboard-content" class="hidden">
-        <!-- Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-6 mb-8">
-          <!-- Card 1 -->
-          <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex items-center gap-5 transition-transform hover:-translate-y-1 duration-300">
-            <div class="p-4 rounded-full bg-indigo-50 text-indigo-600 shrink-0">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-slate-500">総回答数</p>
-              <p class="text-3xl font-bold text-slate-800 tracking-tight" id="total-answers">0</p>
-            </div>
+      <!-- KPI Cards (3 columns grid) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-8">
+        
+        <!-- Card 1: Total Responses -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex items-center gap-5 transition-transform hover:-translate-y-1 duration-300">
+          <div class="p-4 rounded-full bg-indigo-50 text-indigo-600 shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
           </div>
-          
-          <!-- Card 2 -->
-          <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex items-center gap-5 transition-transform hover:-translate-y-1 duration-300">
-            <div class="p-4 rounded-full bg-amber-50 text-amber-600 shrink-0">
-              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-            </div>
-            <div>
-              <p class="text-sm font-medium text-slate-500">各施策の平均重要度</p>
-              <p class="text-3xl font-bold text-slate-800 tracking-tight" id="avg-satisfaction">0.0</p>
-            </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-500 truncate">回答数</p>
+            <p class="text-3xl font-bold text-slate-800 tracking-tight" id="kpi-total">0</p>
+          </div>
+        </div>
+        
+        <!-- Card 2: Top Request -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex items-center gap-5 transition-transform hover:-translate-y-1 duration-300">
+          <div class="p-4 rounded-full bg-rose-50 text-rose-600 shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-500 truncate">最も実行してほしいこと</p>
+            <p class="text-xl sm:text-lg lg:text-xl font-bold text-slate-800 leading-tight mt-1 truncate" id="kpi-request" title="-">-</p>
           </div>
         </div>
 
-        <!-- Charts Section -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
-          <!-- Radar Chart (Modified from Pie) -->
-          <div class="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col">
-            <div class="px-6 py-4 border-b border-slate-50">
-              <h2 class="text-lg font-bold text-slate-800">地域復興施策の重要度評価</h2>
-              <p class="text-sm text-slate-500">5段階評価の平均</p>
-            </div>
-            <div class="p-6 flex-grow flex items-center justify-center relative min-h-[300px]">
-              <canvas id="satisfaction-chart"></canvas>
-            </div>
+        <!-- Card 3: Top Policy -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-slate-100 flex items-center gap-5 transition-transform hover:-translate-y-1 duration-300">
+          <div class="p-4 rounded-full bg-emerald-50 text-emerald-600 shrink-0">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
           </div>
-          
-          <!-- Bar Chart -->
-          <div class="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col">
-            <div class="px-6 py-4 border-b border-slate-50">
-              <h2 class="text-lg font-bold text-slate-800">回答者の年齢層</h2>
-              <p class="text-sm text-slate-500">年代別の回答数</p>
-            </div>
-            <div class="p-6 flex-grow flex items-center justify-center relative min-h-[300px]">
-              <canvas id="age-chart"></canvas>
-            </div>
+          <div class="min-w-0">
+            <p class="text-sm font-medium text-slate-500 truncate">最も関心の高い政策分野</p>
+            <p class="text-xl sm:text-lg lg:text-xl font-bold text-slate-800 leading-tight mt-1 truncate" id="kpi-policy" title="-">-</p>
           </div>
         </div>
 
-        <!-- Table Section -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-          <div class="px-6 py-4 border-b border-slate-100 bg-white flex items-center justify-between">
-            <h2 class="text-lg font-bold text-slate-800">生データ一覧 (最新版一部)</h2>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 mb-8">
+        <!-- Radar Chart -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col h-[400px]">
+          <div class="px-6 py-4 border-b border-slate-50">
+            <h2 class="text-lg font-bold text-slate-800">地域復興施策の重要度評価</h2>
+            <p class="text-sm text-slate-500">5段階評価の属性別平均</p>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse whitespace-nowrap">
-              <thead>
-                <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
-                  <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">ID</th>
-                  <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">回答日時</th>
-                  <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">年齢層</th>
-                  <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">最も実行してほしいこと</th>
-                  <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">興味のある政策分野</th>
-                </tr>
-              </thead>
-              <tbody id="data-table-body" class="divide-y divide-slate-100">
-                <!-- Rows will be generated by JS -->
-              </tbody>
-            </table>
+          <div class="p-4 flex-grow relative w-full h-full">
+            <canvas id="satisfaction-chart"></canvas>
+          </div>
+        </div>
+        
+        <!-- Bar Chart (hidden if specific generation is selected, or shows comparison) -->
+        <!-- We will keep it but hide it if a specific generation is selected, or just let it show the filtered data (which would be 1 bar). 
+             To be useful, let's keep it showing all ages when 'overall', and maybe hide or compare when filtered. 
+             For MVP Phase3, let's just make it adapt to the data. If filtered to 20s, it'll just show 20s. -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 flex flex-col h-[400px]" id="age-chart-container">
+          <div class="px-6 py-4 border-b border-slate-50">
+            <h2 class="text-lg font-bold text-slate-800">回答者の年齢層分布</h2>
+            <p class="text-sm text-slate-500">年代別の回答数</p>
+          </div>
+          <div class="p-4 flex-grow relative w-full h-full">
+            <canvas id="age-chart"></canvas>
           </div>
         </div>
       </div>
-    </main>
-    
-    <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
-      <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
-        <p>&copy; 2026 Dashboard MVP Project.</p>
+
+      <!-- Raw Data Table -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 bg-white">
+          <h2 class="text-lg font-bold text-slate-800">最新の回答データ</h2>
+          <p class="text-sm text-slate-500">選択した属性に基づく最新の回答</p>
+        </div>
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
+            <thead>
+              <tr class="bg-slate-50 text-slate-500 border-b border-slate-200">
+                <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">日時</th>
+                <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">年齢</th>
+                <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">最も実行してほしいこと</th>
+                <th class="px-6 py-3 font-semibold text-xs uppercase tracking-wider">興味のある政策</th>
+              </tr>
+            </thead>
+            <tbody id="data-table-body" class="divide-y divide-slate-100">
+              <!-- Rows injected by JS -->
+            </tbody>
+          </table>
+        </div>
       </div>
-    </footer>
-  </div>
+
+    </div>
+  </main>
   
+  <footer class="bg-white border-t border-slate-200 py-6 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm text-slate-500">
+      <p>&copy; 2026 Dashboard Phase3 - Personalized Insights</p>
+    </div>
+  </footer>
+
   <script src="app.js"></script>
 </body>
 </html>
