@@ -70,48 +70,56 @@ function animateValue(id, start, end, duration) {
 
 // チャートの描画（事前集計されたデータを使用）
 function drawCharts(charts) {
-  const satisfactionCounts = charts.satisfaction || { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+  const radarDataMap = charts.satisfaction || { 
+    "地元商店街の活性化策": 0, "地域独自のイベントや文化活動": 0, 
+    "テレワーク促進インフラ整備": 0, "UIターン希望者への住宅支援": 0, "若手起業家への支援制度": 0 
+  };
   
-  // 円グラフ
+  // レーダーグラフ
   const ctxSatisfaction = document.getElementById('satisfaction-chart').getContext('2d');
   new Chart(ctxSatisfaction, {
-    type: 'pie',
+    type: 'radar',
     data: {
-      labels: ['1 (不満)', '2', '3', '4', '5 (満足)'],
+      labels: Object.keys(radarDataMap),
       datasets: [{
-        data: [
-          satisfactionCounts[1] || 0,
-          satisfactionCounts[2] || 0,
-          satisfactionCounts[3] || 0,
-          satisfactionCounts[4] || 0,
-          satisfactionCounts[5] || 0
-        ],
-        backgroundColor: [
-          '#ef4444', // red-500
-          '#f97316', // orange-500
-          '#facc15', // yellow-400
-          '#84cc16', // lime-500
-          '#22c55e', // green-500
-        ],
-        borderWidth: 0,
-        hoverOffset: 8
+        label: '平均重要度',
+        data: Object.values(radarDataMap),
+        backgroundColor: 'rgba(99, 102, 241, 0.2)', // indigo-500 with opacity
+        borderColor: '#6366f1',
+        pointBackgroundColor: '#6366f1',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#6366f1',
+        borderWidth: 2,
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      scales: {
+        r: {
+          angleLines: {
+            display: true
+          },
+          suggestedMin: 1,
+          suggestedMax: 5,
+          ticks: {
+            stepSize: 1,
+            font: { family: "'Inter', sans-serif", size: 10 }
+          },
+          pointLabels: {
+            font: { family: "'Inter', sans-serif", size: 11 }
+          }
+        }
+      },
       plugins: {
         legend: {
-          position: 'bottom',
-          labels: { padding: 20, font: { family: "'Inter', sans-serif" } }
+          display: false
         },
         tooltip: {
           callbacks: {
             label: function(context) {
-              let label = context.label || '';
-              if (label) label += ': ';
-              if (context.parsed !== null) label += context.parsed + '人';
-              return label;
+              return context.parsed.r + ' 点';
             }
           }
         }
@@ -119,7 +127,7 @@ function drawCharts(charts) {
     }
   });
 
-  const ageCounts = charts.age || { "10代": 0, "20代": 0, "30代": 0, "40代": 0, "50代": 0, "60代以上": 0 };
+  const ageCounts = charts.age || { "10代": 0, "20代": 0, "30代": 0, "40代": 0, "50代": 0, "60代": 0, "70代": 0, "80代以上": 0 };
 
   // 棒グラフ
   const ctxAge = document.getElementById('age-chart').getContext('2d');
@@ -177,11 +185,6 @@ function renderTable(recentRows) {
   recentRows.forEach(item => {
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-slate-50 transition-colors group';
-    
-    let satisfactionColor = 'bg-slate-100 text-slate-800';
-    if (item.satisfaction >= 4) satisfactionColor = 'bg-green-100 text-green-800';
-    else if (item.satisfaction === 3) satisfactionColor = 'bg-amber-100 text-amber-800';
-    else satisfactionColor = 'bg-red-100 text-red-800';
 
     const interestsIcons = Array.isArray(item.interests) 
       ? item.interests.map(i => `<span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 rounded text-xs border border-indigo-100">${i}</span>`).join('')
@@ -192,8 +195,8 @@ function renderTable(recentRows) {
       <td class="px-6 py-4 text-sm text-slate-700 whitespace-nowrap">${item.date || ''}</td>
       <td class="px-6 py-4 text-sm text-slate-700">${item.age || ''}</td>
       <td class="px-6 py-4 text-sm text-slate-700">
-        <span class="px-2.5 py-1 rounded-full text-xs font-semibold ${satisfactionColor}">
-          ★ ${item.satisfaction || '-'}
+        <span class="px-2.5 py-1 rounded bg-slate-100 text-slate-800 text-xs font-semibold">
+          ${item.mostWanted || '-'}
         </span>
       </td>
       <td class="px-6 py-4 text-sm text-slate-700">
