@@ -1,0 +1,35 @@
+{
+  "lastUpdated": "2026-04-11T07:12:13.486Z",
+  "summary": {
+    "totalAnswers": 1,
+    "avgSatisfaction": 0
+  },
+  "charts": {
+    "satisfaction": {
+      "1": 0,
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0
+    },
+    "age": {
+      "10代": 0,
+      "20代": 0,
+      "30代": 0,
+      "40代": 0,
+      "50代": 0,
+      "60代以上": 1
+    }
+  },
+  "recentAnswers": [
+    {
+      "id": 1,
+      "date": "2026-04-11 16:10",
+      "age": "男",
+      "satisfaction": 10,
+      "interests": [
+        "雇用の創出と地域経済の活性化"
+      ]
+    }
+  ]
+}
